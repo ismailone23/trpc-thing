@@ -1,22 +1,20 @@
-import "server-only";
 
-import { headers } from "next/headers";
-import { cache } from "react";
+import { type AppRouter } from "@/server/api/root";
+import { createTRPCReact } from "@trpc/react-query";
+import { type inferRouterInputs, type inferRouterOutputs } from "@trpc/server";
 
-import { createCaller } from "@/server/api/root";
-import { createTRPCContext } from "@/server/api/trpc";
+export const api = createTRPCReact<AppRouter>();
 
 /**
- * This wraps the `createTRPCContext` helper and provides the required context for the tRPC API when
- * handling a tRPC call from a React Server Component.
+ * Inference helper for inputs.
+ *
+ * @example type HelloInput = RouterInputs['example']['hello']
  */
-const createContext = cache(() => {
-  const heads = new Headers(headers());
-  heads.set("x-trpc-source", "rsc");
+export type RouterInputs = inferRouterInputs<AppRouter>;
 
-  return createTRPCContext({
-    headers: heads,
-  });
-});
-
-export const api = createCaller(createContext);
+/**
+ * Inference helper for outputs.
+ *
+ * @example type HelloOutput = RouterOutputs['example']['hello']
+ */
+export type RouterOutputs = inferRouterOutputs<AppRouter>;

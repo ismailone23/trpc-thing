@@ -2,31 +2,28 @@ import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 
-let post = {
-  id: 1,
-  name: "Hello World",
-};
-
+const userProcedure = publicProcedure.input(z.object({ userId: z.string() }))
+let user: { name: string, userId: string }[] = [{ userId: "1ku-3jdsj", name: "ismail" }];
 export const postRouter = createTRPCRouter({
   hello: publicProcedure
-    .input(z.object({ text: z.string() }))
-    .query(({ input }) => {
+    .query(() => {
       return {
-        greeting: `Hello ${input.text}`,
+        greeting: `Hello world from tprc hello`,
       };
     }),
-
-  create: publicProcedure
-    .input(z.object({ name: z.string().min(1) }))
-    .mutation(async ({ input }) => {
-      // simulate a slow db call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      post = { id: post.id + 1, name: input.name };
-      return post;
-    }),
-
-  getLatest: publicProcedure.query(() => {
-    return post;
+  get: publicProcedure.query(() => {
+    return {
+      res: user
+    }
   }),
+  update: userProcedure.input(z.object({ name: z.string() })).mutation(req => {
+    user.push({ name: req.input.name, userId: req.input.userId })
+    console.log(req.ctx);
+    return user
+  }),
+  // secretData: protectedProcedure.query(({ ctx }) => {
+  //   console.log(ctx.user);
+  //   return { token: "this is a secrect token" }
+  // })
+
 });
