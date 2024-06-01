@@ -1,0 +1,33 @@
+import NextAuth from "next-auth";
+import authConfig from "@/lib/auth/auth.config";
+
+export const { handlers, auth } = NextAuth({
+    session: { strategy: "jwt" },
+    callbacks: {
+        jwt: async ({ token }) => {
+            if (!token.sub) { return null }
+            return token
+        },
+        session: ({ session, token }) => {
+            if (!token.sub) {
+                return session;
+            }
+            session.user = {
+                id: token.sub,
+                email: token.email ?? session.user.email,
+                image: token.picture ?? session.user.image,
+                emailVerified: session.user.emailVerified,
+                name: token.name ?? session.user.name,
+            };
+            return session;
+        },
+    },
+    ...authConfig
+});
+
+/**
+ * Wrapper for `getServerSession` so that you don't need to import the `authOptions` in every file.
+ *
+ * @see https://next-auth.js.org/configuration/nextjs
+ */
+// export const getServerAuthSession = () => getServerSession(authOptions);
