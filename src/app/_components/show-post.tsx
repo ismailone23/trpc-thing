@@ -8,9 +8,9 @@ export default function ShowPost() {
     const get = api.post.get.useQuery()
     const router = useRouter()
     const updateuser = api.post.update.useMutation({
-        onSettled: () => {
+        onSettled: async () => {
             router.refresh();
-            get.refetch();
+            await get.refetch();
         }
     })
 

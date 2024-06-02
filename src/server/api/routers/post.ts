@@ -3,7 +3,8 @@ import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 
 const userProcedure = publicProcedure.input(z.object({ userId: z.string() }))
-let user: { name: string, userId: string }[] = [{ userId: "1ku-3jdsj", name: "ismail" }];
+const user: { name: string, userId: string }[] = [{ userId: "1ku-3jdsj", name: "ismail" }];
+
 export const postRouter = createTRPCRouter({
   hello: publicProcedure
     .query(() => {
